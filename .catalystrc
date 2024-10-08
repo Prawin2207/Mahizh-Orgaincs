@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "9735000000007075",
+      "name": "MahizhOrganics",
+      "domain": {
+        "id": "50022524421",
+        "name": "mahizhorganics-60033170628.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60033170628",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}
