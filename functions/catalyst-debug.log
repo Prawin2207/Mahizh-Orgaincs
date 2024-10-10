@@ -1,0 +1,32 @@
+[debug] [2024-10-10T08:29:59.942Z] : 
+[debug] [2024-10-10T08:29:59.945Z] : ----------------------------------------------------------------------
+[debug] [2024-10-10T08:29:59.946Z] : Command:      C:\Program Files\nodejs\node.exe C:\Users\Prawin\AppData\Roaming\npm\node_modules\zcatalyst-cli\lib\bin\catalyst.js serve
+[debug] [2024-10-10T08:29:59.947Z] : CLI Version:  1.17.5
+[debug] [2024-10-10T08:29:59.948Z] : Platform:     win32
+[debug] [2024-10-10T08:29:59.949Z] : Node Version: v18.20.4
+[debug] [2024-10-10T08:29:59.953Z] : Time:         Thu Oct 10 2024 13:59:59 GMT+0530 (India Standard Time)
+[debug] [2024-10-10T08:29:59.954Z] : ----------------------------------------------------------------------
+[debug] [2024-10-10T08:29:59.955Z] : 
+[debug] [2024-10-10T08:30:03.079Z] : > authorizing via signed-in user option
+[debug] [2024-10-10T08:30:03.081Z] : > command requires scopes: ["ZohoCatalyst.projects.ALL","ZohoCatalyst.functions.ALL","ZohoCatalyst.functions.EXECUTE","ZohoCatalyst.webapp.ALL","ZohoCatalyst.pdfshot.execute"]
+[debug] [2024-10-10T08:30:03.116Z] : >>>> HTTP REQUEST : GET https://api.catalyst.zoho.in/baas/v1/project/9735000000007075 
+
+[debug] [2024-10-10T08:30:03.628Z] : <<<< HTTP RESPONSE : 200
+Response Headers: {"server":"ZGS","date":"Thu, 10 Oct 2024 08:30:02 GMT","content-type":"application/vnd.catalyst.v2+json","transfer-encoding":"chunked","connection":"close","set-cookie":["zalb_3a750b85f1=99131cfabfda186b4fe68a16fb8fedd6; Path=/; Secure; HttpOnly","ZD_CSRF_TOKEN=138a6710-7ce9-4b7d-aa31-8472ca52100f;path=/;SameSite=None;Secure;priority=high","_zcsr_tmp=138a6710-7ce9-4b7d-aa31-8472ca52100f;path=/;SameSite=Strict;Secure;priority=high"],"x-content-type-options":"nosniff","x-xss-protection":"1","cache-control":"private,no-cache,no-store,max-age=0,must-revalidate","pragma":"no-cache","expires":"Thu, 01 Jan 1970 00:00:00 GMT","x-frame-options":"DENY","strict-transport-security":"max-age=63072000"}
+
+[debug] [2024-10-10T08:30:03.635Z] : >>>> HTTP REQUEST : GET https://api.catalyst.zoho.in/baas/v1/project/9735000000007075/environment 
+
+[debug] [2024-10-10T08:30:03.969Z] : <<<< HTTP RESPONSE : 200
+Response Headers: {"server":"ZGS","date":"Thu, 10 Oct 2024 08:30:03 GMT","content-type":"application/vnd.catalyst.v2+json","transfer-encoding":"chunked","connection":"close","set-cookie":["zalb_3a750b85f1=99131cfabfda186b4fe68a16fb8fedd6; Path=/; Secure; HttpOnly","ZD_CSRF_TOKEN=6a299451-a45e-4f94-a4d0-daf0031d296b;path=/;SameSite=None;Secure;priority=high","_zcsr_tmp=6a299451-a45e-4f94-a4d0-daf0031d296b;path=/;SameSite=Strict;Secure;priority=high"],"x-content-type-options":"nosniff","x-xss-protection":"1","cache-control":"private,no-cache,no-store,max-age=0,must-revalidate","pragma":"no-cache","expires":"Thu, 01 Jan 1970 00:00:00 GMT","x-frame-options":"DENY","strict-transport-security":"max-age=63072000"}
+
+[debug] [2024-10-10T08:30:04.887Z] : >>>> HTTP REQUEST : GET https://api.catalyst.zoho.in/baas/v1/project/9735000000007075/function 
+Query params: {"type":"basicio,event,cron,applogic,integration,browser_logic"}
+
+[debug] [2024-10-10T08:30:05.197Z] : <<<< HTTP RESPONSE : 200
+Response Headers: {"server":"ZGS","date":"Thu, 10 Oct 2024 08:30:04 GMT","content-type":"application/vnd.catalyst.v2+json","transfer-encoding":"chunked","connection":"close","set-cookie":["zalb_3a750b85f1=7c58023b2365c117e2ff9b6feb09efa2; Path=/; Secure; HttpOnly","ZD_CSRF_TOKEN=4742007f-9a54-455e-aaeb-c1fb0c0d29bd;path=/;SameSite=None;Secure;priority=high","_zcsr_tmp=4742007f-9a54-455e-aaeb-c1fb0c0d29bd;path=/;SameSite=Strict;Secure;priority=high"],"x-content-type-options":"nosniff","x-xss-protection":"1","cache-control":"private,no-cache,no-store,max-age=0,must-revalidate","pragma":"no-cache","expires":"Thu, 01 Jan 1970 00:00:00 GMT","x-frame-options":"DENY","strict-transport-security":"max-age=63072000"}
+
+[debug] [2024-10-10T08:30:05.205Z] : unknown eol undefined hence skipping check
+[info] [2024-10-10T08:30:06.372Z] : 
+[info] [2024-10-10T08:30:06.373Z] :  >>>>>>>>>>>>> AdvancedIO <<<<<<<<<<<< 
+[info] [2024-10-10T08:30:06.375Z] : i mahizh_organics_function: http://localhost:3000/server/mahizh_organics_function/
+[info] [2024-10-10T08:30:06.375Z] : 
