@@ -1,65 +1,94 @@
-var catalyst = require('zcatalyst-sdk-node');
-const multer = require('multer')
-const upload = multer({ dest: 'uploads/' });
+const catalyst = require('zcatalyst-sdk-node');
 
 exports.getproduct = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        const zcql = app.zcql();
 
-    var app = catalyst.initialize(req);
-    let zcql = app.zcql();
+        let offset = 1;
+        const value = 200;
+        let allProducts = [];
 
-    let offset = 1;
-    let value = 200;
-    let allProducts = [];
+        const TABLE_NAME = "Products";
+        const countquery = 'SELECT COUNT(ROWID) FROM Products';
 
-    let TABLE_NAME = "Products"
-    let countquery = 'SELECT COUNT(ROWID) FROM Products'
-    //// getting product count ///
-    let CountData = await zcql.executeZCQLQuery(countquery);
-    const rowCount = CountData[0].Products["COUNT(ROWID)"];
+        const CountData = await zcql.executeZCQLQuery(countquery);
+        const rowCount = CountData[0].Products["COUNT(ROWID)"];
 
-    const loopCount = Math.ceil(rowCount / value);
-    
-    for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
-        const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
-        const getProducts = await zcql.executeZCQLQuery(query);
-        allProducts = allProducts.concat(getProducts);
-        offset += value;
+        const loopCount = Math.ceil(rowCount / value);
+
+        for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
+            const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
+            const getProducts = await zcql.executeZCQLQuery(query);
+            allProducts = allProducts.concat(getProducts);
+            offset += value;
+        }
+        res.send(allProducts);
+    } catch (error) {
+        console.error('Error in getproduct:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
     }
-    res.send(allProducts);
-
-},
+};
 
 ///////////// updating the product /////////////
 
-exports.updateProduct = async(req,res)=>{
+exports.updateProduct = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        const datastore = app.datastore();
+        const table = datastore.table('Products');
 
+        // Parameter sanitization and strict input validation
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).send({ error: 'Invalid payload type' });
+        }
 
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
+        const { ROWID, Name, Price, Quantity, Description } = req.body;
 
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
+        if (!ROWID) {
+            return res.status(400).send({ error: 'ROWID is required' });
+        }
 
-    rowPromise.then((row) => { console.log(row); });
+        // Sanitize update fields to prevent mass assignment / parameter pollution
+        const sanitizedData = { ROWID };
+        if (Name !== undefined) sanitizedData.Name = String(Name);
+        if (Price !== undefined) sanitizedData.Price = Number(Price);
+        if (Quantity !== undefined) sanitizedData.Quantity = Number(Quantity);
+        if (Description !== undefined) sanitizedData.Description = String(Description);
 
-
-},
+        const updatedRow = await table.updateRow(sanitizedData);
+        res.send(updatedRow);
+    } catch (error) {
+        console.error('Error in updateProduct:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
 
 ///////// getimage //////////
 
-exports.getImage = (req,res)=>{
+exports.getImage = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        const filestore = app.filestore();
 
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
+        const folderid = req.params.folderid;
+        const fileid = req.params.fileid;
 
-}
+        if (!folderid || !fileid) {
+            return res.status(400).send({ error: 'Folder ID and File ID are required' });
+        }
 
+        // Check if params are safe alphanumeric strings to prevent path traversal/pollution
+        const idRegex = /^[0-9]+$/;
+        if (!idRegex.test(folderid) || !idRegex.test(fileid)) {
+            return res.status(400).send({ error: 'Invalid ID format' });
+        }
 
-
+        const folder = filestore.folder(folderid);
+        const fileObject = await folder.downloadFile(fileid);
+        fileObject.pipe(res);
+    } catch (error) {
+        console.error('Error in getImage:', error);
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
