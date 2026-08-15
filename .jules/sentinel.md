@@ -1,0 +1,4 @@
+## 2026-08-15 - Zoho Catalyst Express Function Context & Unhandled Promise Rejections
+**Vulnerability:** Controller actions using Zoho Catalyst SDK without `catalyst.initialize(req)` inside request handlers, combined with missing try/catch blocks and broken routes.
+**Learning:** In Zoho Catalyst serverless Express functions, SDK instances (datastore, filestore, zcql) depend on per-request initialization (`catalyst.initialize(req)`). Uninitialized access causes uncaught exceptions/unhandled promise rejections that bring down function execution or expose internal trace information.
+**Prevention:** Always initialize Catalyst app context per-request inside `try...catch` blocks in all controller methods, return safe 500 error responses without exposing internal stack traces, and ensure `express.json()` middleware is mounted on the Express app.
