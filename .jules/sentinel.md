@@ -1,0 +1,4 @@
+## 2025-02-18 - Zoho Catalyst Express SDK Initialization and Exception Handling
+**Vulnerability:** In Zoho Catalyst serverless Express functions, controller handlers were accessing an uninitialized global `app` variable (`app.datastore()`, `app.filestore()`) and lacking `try...catch` error handling, resulting in ReferenceErrors, unhandled promise rejections, and raw error trace leaks.
+**Learning:** Catalyst SDK instance context must be explicitly initialized per request using `catalyst.initialize(req)`. Unhandled exceptions in Express route handlers can crash the function worker or expose sensitive application implementation details.
+**Prevention:** Always initialize `const app = catalyst.initialize(req)` inside every endpoint handler, validate request input payloads, and encapsulate database/filestore operations in `try...catch` blocks returning generic error responses.
