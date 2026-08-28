@@ -4,8 +4,7 @@ const controller = require('./controller');
 
 router.get('/getproducts',controller.getproduct);
 router.put('/updateProduct',controller.updateProduct);
-
-router.put('/getImage/:folderid/:fileid')
+router.get('/getImage/:folderid/:fileid', controller.getImage);
 
 
 

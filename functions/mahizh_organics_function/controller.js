@@ -48,18 +48,23 @@ exports.updateProduct = async(req,res)=>{
 
 ///////// getimage //////////
 
-exports.getImage = (req,res)=>{
-
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
-
-}
+exports.getImage = (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        let filestore = app.filestore();
+        let folder = filestore.folder(req.params.folderid);
+        let downloadPromise = folder.downloadFile(req.params.fileid);
+        downloadPromise
+            .then((fileObject) => {
+                fileObject.pipe(res);
+            })
+            .catch((err) => {
+                res.status(500).send({ error: "Internal Server Error" });
+            });
+    } catch (err) {
+        res.status(500).send({ error: "Internal Server Error" });
+    }
+};
 
 
 
