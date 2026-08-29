@@ -1,0 +1,4 @@
+## 2024-08-29 - Secure Initialization & Error Handling in Zoho Catalyst Node.js Express Functions
+**Vulnerability:** Unhandled async promise rejections and missing JSON request body parsing in Zoho Catalyst Express backend functions leading to potential application crash/denial of service, unhandled exceptions, and uninitialized SDK context errors.
+**Learning:** Zoho Catalyst SDK requires `catalyst.initialize(req)` inside request handlers rather than global initialization. Express apps running inside Catalyst functions must explicitly register `express.json()` middleware and use proper `express.Router()` instances with try/catch exception wrappers to avoid exposing internal details or crashing the function instance.
+**Prevention:** Always initialize Catalyst per request using `catalyst.initialize(req)`, enable JSON middleware on the root Express instance, wrap all controller async handlers in try/catch blocks, and return safe generic error messages.
