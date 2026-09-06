@@ -1,0 +1,4 @@
+## 2025-05-20 - Unhandled Promises and Uninitialized SDK Context in Zoho Catalyst Functions
+**Vulnerability:** Controller routes lacked SDK initialization (`catalyst.initialize(req)`), `express.json()` middleware, input validation, and `try/catch` error handling on asynchronous Catalyst datastore/filestore operations.
+**Learning:** In Zoho Catalyst serverless functions, omitting request-scoped initialization or omitting `try/catch` blocks around SDK promises causes hanging requests (DoS risk), unhandled promise rejections, and potential leakage of stack traces.
+**Prevention:** Always initialize Catalyst SDK with request context inside each handler, parse incoming bodies with `express.json()`, validate request payloads, and wrap asynchronous datastore/filestore calls in `try/catch` blocks returning generic error responses.
