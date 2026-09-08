@@ -48,17 +48,20 @@ exports.updateProduct = async(req,res)=>{
 
 ///////// getimage //////////
 
-exports.getImage = (req,res)=>{
-
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
-
+exports.getImage = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        let filestore = app.filestore();
+        let folder = filestore.folder(req.params.folderid);
+        let fileObject = await folder.downloadFile(req.params.fileid);
+        fileObject.pipe(res);
+    } catch (error) {
+        console.error("Error downloading file from filestore:", error.message || error);
+        // Secure generic error response to prevent internal information leakage and process crashes
+        if (!res.headersSent) {
+            res.status(500).send({ error: "Failed to download image." });
+        }
+    }
 }
 
 
