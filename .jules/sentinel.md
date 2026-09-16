@@ -1,0 +1,4 @@
+## 2026-09-16 - Zoho Catalyst Express Backend Request Handling & Validation Gap
+**Vulnerability:** Unvalidated payloads in Catalyst data store operations and unhandled promise rejections leaking stack traces or hanging client requests due to uninitialized SDK app contexts (`catalyst.initialize(req)`).
+**Learning:** In Catalyst Express functions, each route handler must initialize the Catalyst SDK context per-request (`catalyst.initialize(req)`), parse JSON bodies using `express.json()`, validate required fields like `ROWID`, and wrap asynchronous datastore/filestore operations in try-catch blocks to prevent information leakage and unhandled promise rejections.
+**Prevention:** Ensure all Express controllers initialize SDK per-request, validate incoming payloads strictly before DB operations, and return sanitized 500 responses on server errors.
