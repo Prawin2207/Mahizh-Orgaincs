@@ -1,0 +1,4 @@
+## 2025-02-18 - Zoho Catalyst Express Function Context & Unhandled Promise Rejections
+**Vulnerability:** In unhandled Express endpoints, missing Catalyst SDK initialization (`catalyst.initialize(req)`) causes reference errors (`app is not defined`), and unhandled async promise rejections lead to process crashes or hung HTTP requests with potential internal stack/error dumps.
+**Learning:** Express routes in Zoho Catalyst serverless backend functions require `catalyst.initialize(req)` inside each route request handler, and `express.json()` middleware must be explicitly registered on the Express app instance.
+**Prevention:** Always initialize `catalyst.initialize(req)` per request, configure `express.json()`, and wrap database and filestore SDK calls in try-catch blocks that return structured JSON error messages with proper HTTP status codes.
