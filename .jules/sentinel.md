@@ -1,0 +1,4 @@
+## 2025-02-18 - Catalyst Express App Context and Error Boundaries
+**Vulnerability:** Controller actions (`updateProduct`, `getImage`) accessed uninitialized `app` variables and lacked error boundaries or response completion, leading to server crashes, unhandled promise rejections, and hanging client connections.
+**Learning:** Serverless Express functions using Zoho Catalyst SDK require `catalyst.initialize(req)` within each handler scope and proper `try...catch` blocks to safely handle errors and respond to HTTP requests without leaking internal details or crashing the function execution.
+**Prevention:** Ensure per-request SDK initialization, wrap async controller functions with try-catch blocks returning generic 500 JSON errors, and configure explicit JSON body parsing middleware (`express.json()`).
