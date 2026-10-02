@@ -32,33 +32,31 @@ exports.getproduct = async (req, res) => {
 ///////////// updating the product /////////////
 
 exports.updateProduct = async(req,res)=>{
-
-
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
+    try {
+        var app = catalyst.initialize(req);
+        let datastore = app.datastore();
+        let table = datastore.table('Products');
+        let row = await table.updateRow(req.body);
+        res.status(200).send({ status: "success", data: row });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).send({ status: "error", message: "Failed to update product" });
+    }
 },
 
 ///////// getimage //////////
 
-exports.getImage = (req,res)=>{
-
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
-
+exports.getImage = async (req, res) => {
+    try {
+        var app = catalyst.initialize(req);
+        let filestore = app.filestore();
+        let folder = filestore.folder(req.params.folderid);
+        let fileObject = await folder.downloadFile(req.params.fileid);
+        fileObject.pipe(res);
+    } catch (error) {
+        console.error("Error getting image:", error);
+        res.status(500).send({ status: "error", message: "Failed to retrieve image" });
+    }
 }
 
 
