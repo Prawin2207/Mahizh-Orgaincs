@@ -1,0 +1,4 @@
+## 2026-10-04 - Uninitialized Catalyst SDK Context & Missing Express Middleware
+**Vulnerability:** Controller functions referenced an uninitialized global `app` variable for Catalyst SDK datastore and filestore operations without explicit request initialization, causing runtime `ReferenceError` crashes and unhandled promise rejections. Additionally, JSON parsing middleware was absent and route handlers lacked try-catch error handling.
+**Learning:** Zoho Catalyst serverless Express functions require `catalyst.initialize(req)` within each request context. Without this initialization and explicit body-parser middleware (`express.json()`), request handling fails unexpectedly and can expose stack traces or crash process execution.
+**Prevention:** Always initialize `catalyst.initialize(req)` per request, configure `express.json()` in `index.js`, and enclose all controller logic in try-catch blocks to catch errors and safely return standard error responses.
