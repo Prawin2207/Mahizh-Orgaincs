@@ -31,19 +31,20 @@ exports.getproduct = async (req, res) => {
 
 ///////////// updating the product /////////////
 
-exports.updateProduct = async(req,res)=>{
+exports.updateProduct = async (req, res) => {
+    try {
+        // SECURITY: Initialize Catalyst app per request context to avoid reference errors
+        const app = catalyst.initialize(req);
+        const datastore = app.datastore();
+        const table = datastore.table('Products');
 
-
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
+        const updatedRow = await table.updateRow(req.body);
+        return res.status(200).send({ status: 'success', data: updatedRow });
+    } catch (error) {
+        // SECURITY: Secure error handling prevents leaking internal stack traces / implementation details
+        console.error('Error updating product:', error);
+        return res.status(500).send({ status: 'error', message: 'Internal server error' });
+    }
 },
 
 ///////// getimage //////////
