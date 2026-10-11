@@ -1,65 +1,73 @@
 var catalyst = require('zcatalyst-sdk-node');
-const multer = require('multer')
-const upload = multer({ dest: 'uploads/' });
 
 exports.getproduct = async (req, res) => {
+    try {
+        var app = catalyst.initialize(req);
+        let zcql = app.zcql();
 
-    var app = catalyst.initialize(req);
-    let zcql = app.zcql();
+        let offset = 1;
+        let value = 200;
+        let allProducts = [];
 
-    let offset = 1;
-    let value = 200;
-    let allProducts = [];
+        let TABLE_NAME = "Products";
+        let countquery = 'SELECT COUNT(ROWID) FROM Products';
 
-    let TABLE_NAME = "Products"
-    let countquery = 'SELECT COUNT(ROWID) FROM Products'
-    //// getting product count ///
-    let CountData = await zcql.executeZCQLQuery(countquery);
-    const rowCount = CountData[0].Products["COUNT(ROWID)"];
+        let CountData = await zcql.executeZCQLQuery(countquery);
+        const rowCount = CountData && CountData[0] && CountData[0].Products ? CountData[0].Products["COUNT(ROWID)"] : 0;
 
-    const loopCount = Math.ceil(rowCount / value);
-    
-    for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
-        const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
-        const getProducts = await zcql.executeZCQLQuery(query);
-        allProducts = allProducts.concat(getProducts);
-        offset += value;
+        const loopCount = Math.ceil(rowCount / value);
+
+        for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
+            const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
+            const getProducts = await zcql.executeZCQLQuery(query);
+            allProducts = allProducts.concat(getProducts);
+            offset += value;
+        }
+        res.send(allProducts);
+    } catch (err) {
+        console.error("Error in getproduct:", err);
+        res.status(500).json({ error: "Failed to fetch products" });
     }
-    res.send(allProducts);
-
-},
+};
 
 ///////////// updating the product /////////////
 
-exports.updateProduct = async(req,res)=>{
+exports.updateProduct = async (req, res) => {
+    try {
+        var app = catalyst.initialize(req);
+        let datastore = app.datastore();
+        let table = datastore.table('Products');
 
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ error: "Invalid payload" });
+        }
 
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
-},
+        let updatedRow = await table.updateRow(req.body);
+        res.json({ success: true, row: updatedRow });
+    } catch (err) {
+        console.error("Error in updateProduct:", err);
+        res.status(500).json({ error: "Failed to update product" });
+    }
+};
 
 ///////// getimage //////////
 
-exports.getImage = (req,res)=>{
+exports.getImage = async (req, res) => {
+    try {
+        var app = catalyst.initialize(req);
+        let filestore = app.filestore();
+        const folderId = req.params.folderid;
+        const fileId = req.params.fileid;
 
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
+        if (!folderId || !fileId) {
+            return res.status(400).json({ error: "Missing folderid or fileid" });
+        }
 
-}
-
-
-
+        let folder = filestore.folder(folderId);
+        let fileObject = await folder.downloadFile(fileId);
+        fileObject.pipe(res);
+    } catch (err) {
+        console.error("Error in getImage:", err);
+        res.status(500).json({ error: "Failed to download file" });
+    }
+};
