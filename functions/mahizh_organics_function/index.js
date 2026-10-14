@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
-port = 8080;
+
+// Parse JSON request bodies securely
+app.use(express.json());
 
 const router = require("./router");
-app.use("/",router);
+app.use("/", router);
 
 module.exports = app;

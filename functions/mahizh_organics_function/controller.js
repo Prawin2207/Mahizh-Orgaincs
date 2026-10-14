@@ -1,65 +1,59 @@
-var catalyst = require('zcatalyst-sdk-node');
-const multer = require('multer')
-const upload = multer({ dest: 'uploads/' });
+const catalyst = require('zcatalyst-sdk-node');
 
 exports.getproduct = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        const zcql = app.zcql();
 
-    var app = catalyst.initialize(req);
-    let zcql = app.zcql();
+        let offset = 1;
+        const value = 200;
+        let allProducts = [];
 
-    let offset = 1;
-    let value = 200;
-    let allProducts = [];
+        const TABLE_NAME = "Products";
+        const countquery = 'SELECT COUNT(ROWID) FROM Products';
+        const CountData = await zcql.executeZCQLQuery(countquery);
+        const rowCount = CountData[0].Products["COUNT(ROWID)"];
 
-    let TABLE_NAME = "Products"
-    let countquery = 'SELECT COUNT(ROWID) FROM Products'
-    //// getting product count ///
-    let CountData = await zcql.executeZCQLQuery(countquery);
-    const rowCount = CountData[0].Products["COUNT(ROWID)"];
+        const loopCount = Math.ceil(rowCount / value);
 
-    const loopCount = Math.ceil(rowCount / value);
-    
-    for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
-        const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
-        const getProducts = await zcql.executeZCQLQuery(query);
-        allProducts = allProducts.concat(getProducts);
-        offset += value;
+        for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
+            const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
+            const getProducts = await zcql.executeZCQLQuery(query);
+            allProducts = allProducts.concat(getProducts);
+            offset += value;
+        }
+        res.status(200).send(allProducts);
+    } catch (err) {
+        console.error("Error in getproduct:", err);
+        res.status(500).json({ error: "Internal server error" });
     }
-    res.send(allProducts);
+};
 
-},
+exports.updateProduct = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
+            return res.status(400).json({ error: "Invalid request payload" });
+        }
+        const datastore = app.datastore();
+        const table = datastore.table('Products');
+        const row = await table.updateRow(req.body);
+        res.status(200).json({ message: "Product updated successfully", data: row });
+    } catch (err) {
+        console.error("Error in updateProduct:", err);
+        res.status(500).json({ error: "Failed to update product" });
+    }
+};
 
-///////////// updating the product /////////////
-
-exports.updateProduct = async(req,res)=>{
-
-
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
-},
-
-///////// getimage //////////
-
-exports.getImage = (req,res)=>{
-
-         let filestore = app.filestore(); 
-        let folder = filestore.folder(req.parms.folderid); 
-        let downloadPromise = folder.downloadFile(req.params.fileid); 
-        downloadPromise.then((fileObject) => 
-        { 
-        console.log(fileObject); 
-              fileObject.pipe(res);
-        });
-
-}
-
-
-
+exports.getImage = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        const filestore = app.filestore();
+        const folder = filestore.folder(req.params.folderid);
+        const fileObject = await folder.downloadFile(req.params.fileid);
+        fileObject.pipe(res);
+    } catch (err) {
+        console.error("Error in getImage:", err);
+        res.status(500).json({ error: "Failed to retrieve image" });
+    }
+};
