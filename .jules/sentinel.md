@@ -1,0 +1,4 @@
+## 2026-10-16 - Serverless Request Context & Unhandled Exception Defense
+**Vulnerability:** Unhandled process errors, hanging requests (DoS risk), and unparsed request bodies in Zoho Catalyst Node.js serverless functions due to missing per-request initialization, missing route handlers, and missing express.json() middleware.
+**Learning:** Zoho Catalyst SDK functions require calling `catalyst.initialize(req)` inside every request handler rather than assuming global state. Without proper try-catch wrapper logic and explicit JSON parsing middleware, failed requests hang indefinitely or throw unhandled promise rejections.
+**Prevention:** Always use `express.Router()`, enable `express.json()` middleware, initialize SDK context per-request inside `try` blocks, and return explicit HTTP error responses in `catch` blocks.
