@@ -31,19 +31,21 @@ exports.getproduct = async (req, res) => {
 
 ///////////// updating the product /////////////
 
-exports.updateProduct = async(req,res)=>{
+exports.updateProduct = async (req, res) => {
+    try {
+        const app = catalyst.initialize(req);
+        if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).length === 0) {
+            return res.status(400).json({ error: "Invalid product data provided" });
+        }
 
-
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
+        const datastore = app.datastore();
+        const table = datastore.table('Products');
+        const updatedRow = await table.updateRow(req.body);
+        return res.status(200).json({ success: true, data: updatedRow });
+    } catch (error) {
+        console.error("Error updating product:", error.message || error);
+        return res.status(500).json({ error: "Failed to update product" });
+    }
 },
 
 ///////// getimage //////////
