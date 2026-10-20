@@ -1,0 +1,4 @@
+## 2026-10-20 - Per-Request SDK Context and Async Exception Safety in Catalyst Express Functions
+**Vulnerability:** Unhandled promise rejections and scope reference errors caused by missing per-request SDK initialization (`catalyst.initialize(req)`) and unvalidated request bodies in Express routes.
+**Learning:** In Zoho Catalyst serverless Express functions, invoking Catalyst SDK methods without per-request SDK initialization leads to undefined `app` reference errors. Uncaught async errors in controller route handlers result in unhandled promise rejections that can crash or hang serverless executions.
+**Prevention:** Always initialize `catalyst.initialize(req)` inside every request handler, parse request payloads with `express.json()`, sanitize inputs, and wrap async operations in `try...catch` blocks returning generic error responses.
