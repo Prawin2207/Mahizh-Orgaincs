@@ -1,0 +1,4 @@
+## 2026-10-23 - Catalyst SDK Request Scope & Error Boundaries
+**Vulnerability:** Request handlers in Zoho Catalyst Express functions failed or crashed when referencing an uninitialized SDK application context or parsing missing/unvalidated body payloads, potentially causing unhandled promise rejections and exposing sensitive stack/error information.
+**Learning:** In Zoho Catalyst Node.js Express serverless functions, `catalyst.initialize(req)` must be called within each request handler to safely establish the SDK instance context, and `express.json()` middleware is required in `index.js` for JSON payload parsing.
+**Prevention:** Always validate request payloads before processing, scope SDK initialization per request handler with `catalyst.initialize(req)`, and wrap database operations in `try...catch` blocks to sanitize error responses.
