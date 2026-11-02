@@ -31,19 +31,29 @@ exports.getproduct = async (req, res) => {
 
 ///////////// updating the product /////////////
 
-exports.updateProduct = async(req,res)=>{
+exports.updateProduct = async (req, res) => {
+    // Security: Validate req.body structure and ROWID to prevent injection and unexpected mutations
+    const payload = req.body;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        return res.status(400).json({ error: "Invalid request payload" });
+    }
 
+    const rowId = String(payload.ROWID || "");
+    if (!rowId || !/^\d{1,19}$/.test(rowId)) {
+        return res.status(400).json({ error: "Invalid or missing ROWID" });
+    }
 
-    // let updatedRowData = { Name: ``, Age: 31, ROWID: 1510000000109474 }; 
-    //Use Table Meta Object to update a single row using ROWID which returns a promise 
-
-    let datastore = app.datastore(); 
-    let table = datastore.table('Products'); 
-    let rowPromise = table.updateRow(req.body);
-
-    rowPromise.then((row) => { console.log(row); });
-
-
+    try {
+        // Security: Initialize per-request Catalyst context and handle errors safely without leaking internal details
+        const app = catalyst.initialize(req);
+        const datastore = app.datastore();
+        const table = datastore.table('Products');
+        const row = await table.updateRow(payload);
+        return res.status(200).json({ success: true, row });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        return res.status(500).json({ error: "Failed to update product" });
+    }
 },
 
 ///////// getimage //////////
