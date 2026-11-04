@@ -3,30 +3,35 @@ const multer = require('multer')
 const upload = multer({ dest: 'uploads/' });
 
 exports.getproduct = async (req, res) => {
+    // Security: Protect against unhandled rejections and prevent leaking internal
+    // database errors or stack traces to clients by wrapping queries in try/catch.
+    try {
+        var app = catalyst.initialize(req);
+        let zcql = app.zcql();
 
-    var app = catalyst.initialize(req);
-    let zcql = app.zcql();
+        let offset = 1;
+        let value = 200;
+        let allProducts = [];
 
-    let offset = 1;
-    let value = 200;
-    let allProducts = [];
+        let TABLE_NAME = "Products";
+        let countquery = 'SELECT COUNT(ROWID) FROM Products';
+        //// getting product count ///
+        let CountData = await zcql.executeZCQLQuery(countquery);
+        const rowCount = CountData[0]?.Products?.["COUNT(ROWID)"] || 0;
 
-    let TABLE_NAME = "Products"
-    let countquery = 'SELECT COUNT(ROWID) FROM Products'
-    //// getting product count ///
-    let CountData = await zcql.executeZCQLQuery(countquery);
-    const rowCount = CountData[0].Products["COUNT(ROWID)"];
+        const loopCount = Math.ceil(rowCount / value);
 
-    const loopCount = Math.ceil(rowCount / value);
-    
-    for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
-        const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
-        const getProducts = await zcql.executeZCQLQuery(query);
-        allProducts = allProducts.concat(getProducts);
-        offset += value;
+        for (let loopingCount = 1; loopingCount <= loopCount; loopingCount++) {
+            const query = `SELECT * FROM ${TABLE_NAME} LIMIT ${offset}, ${value}`;
+            const getProducts = await zcql.executeZCQLQuery(query);
+            allProducts = allProducts.concat(getProducts);
+            offset += value;
+        }
+        res.status(200).send(allProducts);
+    } catch (error) {
+        console.error("Failed to retrieve products:", error);
+        res.status(500).json({ error: "Failed to retrieve products" });
     }
-    res.send(allProducts);
-
 },
 
 ///////////// updating the product /////////////
