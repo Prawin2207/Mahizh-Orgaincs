@@ -1,0 +1,4 @@
+## 2026-11-10 - Unrestricted Payload Size and Missing Body Parser in Serverless Function
+**Vulnerability:** The Zoho Catalyst Express serverless backend mounted routes accepting request bodies (such as `PUT /updateProduct`) without configuring body parsing middleware or payload size limits, posing a Denial of Service (DoS) risk through memory exhaustion and potentially breaking requests expecting parsed JSON.
+**Learning:** Catalyst serverless Express functions do not bundle body parsing by default. Omitting explicit parser middleware with size limits can leave the application exposed to payload-based denial of service attacks.
+**Prevention:** Always configure `express.json({ limit: '10kb' })` or an appropriate restrictive size limit at the root application setup before registering routers.
